@@ -6,9 +6,11 @@ A proposta é construir um MVP (Produto Mínimo Viável) com uma API REST pequen
 
 ## Problema e solução
 
-O domínio implementado é a gestão de consultores: centralizar o cadastro de profissionais e permitir a consulta de suas informações, como especialidade, experiência, disponibilidade e contato.
+Uma empresa de serviços trabalha com diversos consultores e precisa organizar as informações da equipe. A empresa deseja saber quais profissionais estão disponíveis e quais são suas especialidades.
 
-A API oferece duas operações principais: **cadastrar um consultor** e **listar os consultores cadastrados**. O detalhamento do cliente e do problema específico deverá ser complementado pela equipe conforme o briefing recebido.
+O **Projeto 5 — Gestão de Consultores** atende à necessidade de centralizar essas informações por meio de uma API para cadastro e consulta de profissionais, incluindo especialidade, experiência, disponibilidade e contato.
+
+A API oferece duas operações principais: **cadastrar um consultor** e **listar os consultores cadastrados**. A consulta retorna a disponibilidade e a especialidade de cada profissional para apoiar essa organização.
 
 Os dados são armazenados em um array em memória. Ao reiniciar a aplicação, todos os cadastros são perdidos, conforme previsto nesta etapa da atividade.
 
@@ -21,7 +23,7 @@ Os dados são armazenados em um array em memória. Ao reiniciar a aplicação, t
 - **npm** para gerenciar as dependências.
 - **Git e GitHub** para versionamento.
 
-O uso de **Docker** é exigido pela atividade, mas o repositório ainda não possui um `Dockerfile`.
+**Docker** permite construir e executar a API em um container com Node.js 24 Alpine.
 
 ## Como executar
 
@@ -38,7 +40,7 @@ O uso de **Docker** é exigido pela atividade, mas o repositório ainda não pos
 git clone https://github.com/willaraujj/projeto-integrador.git
 cd projeto-integrador
 npm ci
-node server.js
+npm start
 ```
 
 A API estará disponível em **http://localhost:3000**.
@@ -52,11 +54,13 @@ A porta está definida como `3000` em `server.js`. Para encerrar a aplicação, 
 | `id` | Número | Gerado pela aplicação a partir da quantidade de registros em memória. |
 | `nome` | Texto | Nome do consultor. |
 | `especialidade` | Texto | Área de atuação do consultor; campo obrigatório e validado. |
-| `experiencia` | Número | Experiência do consultor; a unidade deve ser definida pela equipe. |
+| `experiencia` | Número | Experiência em anos completos (inteiro maior ou igual a zero). |
 | `disponibilidade` | Booleano | Indica a disponibilidade do profissional. |
 | `contato` | Texto | Informação de contato do consultor. |
 
-Atualmente, somente `especialidade` possui validação de negócio. Os demais campos são recebidos e armazenados sem validação de tipo ou obrigatoriedade.
+Todos os campos enviados no exemplo de cadastro são obrigatórios. `nome`, `especialidade` e `contato` devem ser textos não vazios e têm os espaços externos removidos. `experiencia` deve ser um inteiro maior ou igual a zero. `disponibilidade` deve ser um booleano (`true` ou `false`), inclusive para profissionais indisponíveis. O `id` é gerado pela API. O contato pode ser um telefone ou e-mail; seu formato não é validado.
+
+Dados inválidos retornam HTTP 400 e uma mensagem em JSON. JSON malformado também retorna HTTP 400; corpos acima do limite padrão do Express (100 KB) retornam HTTP 413.
 
 ## Regra de negócio
 
@@ -162,6 +166,10 @@ A resposta será **400 Bad Request**, com a mensagem da regra de negócio aprese
 
 ```text
 projeto-integrador/
+├── Dockerfile
+├── .dockerignore
+├── docs/
+│   └── APRESENTACAO.md
 ├── server.js
 ├── package.json
 ├── package-lock.json
@@ -212,20 +220,51 @@ Os três cenários exigidos pela atividade estão em [consultor.test.js](tests/c
 | Cadastro inválido | Rejeita a ausência de especialidade com HTTP 400 e mantém o armazenamento vazio. |
 | Consulta | Retorna HTTP 200 e o consultor previamente cadastrado. |
 
+A suíte também cobre consulta vazia, especialidades inválidas, tipos incorretos, ausência de corpo, JSON malformado, geração de IDs e normalização dos textos. Confere ainda que disponibilidade `false` e experiência zero são aceitas.
+
 O armazenamento em memória é limpo antes de cada teste para isolar os cenários.
 
-## Execução com Docker — pendente
+## Execução com Docker
 
-A atividade exige criar a imagem, executar um container e acessar a API dentro dele. **O Dockerfile ainda precisa ser implementado**, portanto essa forma de execução ainda não está disponível.
-
-Após adicionar um Dockerfile que instale as dependências e execute `node server.js`, os comandos previstos são:
+Com o Docker instalado e em execução (com BuildKit, padrão nas versões atuais), na raiz do projeto:
 
 ```bash
 docker build -t projeto-integrador .
 docker run --rm -p 3000:3000 --name api-consultores projeto-integrador
 ```
 
-Com o container em execução, o acesso deverá ocorrer em `http://localhost:3000/consultores`.
+Em outro terminal, confirme o acesso:
+
+```bash
+curl http://localhost:3000/
+curl http://localhost:3000/consultores
+```
+
+Os exemplos de cadastro deste README também funcionam com o container. Se a porta 3000 estiver ocupada por uma execução local, encerre-a antes de iniciar o container.
+
+Para encerrar:
+
+```bash
+docker stop api-consultores
+```
+
+O Dockerfile instala somente as dependências de produção com `npm ci --omit=dev`, copia o código e inicia `server.js` com o usuário `node`. A imagem não inclui testes nem dependências de desenvolvimento. Execute `npm test` no ambiente de desenvolvimento antes da construção.
+
+Em redes com proxy HTTPS que exigem uma autoridade certificadora própria, forneça o certificado público apenas durante o build:
+
+```bash
+docker build --secret id=npm_ca,src=/caminho/ca-do-proxy.crt -t projeto-integrador .
+```
+
+Esse certificado é opcional, não é copiado para a imagem e não deve ser versionado. Em uma rede comum, utilize o comando de build padrão.
+
+O armazenamento continua em memória: ao reiniciar ou recriar o container, os registros são perdidos. Não há banco de dados nem volume persistente nesta etapa.
+
+## Validação da implementação
+
+Na revisão de 17/11/2026, os **20 testes automatizados passaram**. A imagem Docker foi construída e o container foi verificado pela porta publicada: consulta vazia (200), cadastro válido (201), cadastro inválido (400) e consulta dos dados (200). A execução com o usuário `node` também foi confirmada.
+
+O build neste ambiente utilizou o certificado público do proxy pelo secret opcional `npm_ca`. Nenhum certificado foi incluído no repositório ou na imagem.
 
 ## Escopo da atividade
 
@@ -245,14 +284,17 @@ Todos os integrantes devem conhecer a implementação e estar preparados para ex
 
 ## Checklist para entrega e apresentação
 
-- [ ] Complementar a descrição do problema com o briefing específico do cliente.
+- [x] Documentar o problema conforme o briefing Gestão de Consultores.
 - [ ] Informar os integrantes da equipe.
-- [ ] Executar e conferir os três testes automatizados com `npm test`.
-- [ ] Implementar o Dockerfile e validar a construção da imagem e a execução do container.
+- [ ] Executar `npm test` no ambiente da apresentação.
+- [x] Implementar Dockerfile e .dockerignore.
+- [ ] Construir a imagem e executar o container no computador da apresentação.
 - [ ] Demonstrar o cadastro válido, o cadastro inválido e a consulta.
 - [ ] Explicar o modelo de dados e as decisões da solução.
 - [ ] Mostrar a aplicação do SRP no código.
 - [ ] Apresentar o histórico de commits e garantir acesso do professor ao repositório.
+
+Consulte o [roteiro de apresentação](docs/APRESENTACAO.md) para demonstração e explicação das decisões.
 
 **Data da apresentação:** a ser definida, conforme o enunciado.
 
