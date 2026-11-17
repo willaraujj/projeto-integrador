@@ -1,5 +1,9 @@
 # Roteiro de apresentação — Gestão de Consultores
 
+**Data: 17/11/2026.**
+
+Para estudar os conceitos e símbolos, consulte o [guia de estudo](GUIA_DE_ESTUDO.md).
+
 ## 1. Problema e solução
 
 Uma empresa de serviços precisa centralizar as informações de seus consultores e saber quais estão disponíveis e quais são suas especialidades. O MVP oferece cadastro e consulta por uma API REST, conforme o Projeto 5 do briefing.
@@ -56,9 +60,8 @@ Mostre código, testes, Dockerfile, README e histórico de commits. Garanta que 
 
 ## Preparação da equipe
 
-- Preencha os nomes e perfis no README (até 6 integrantes).
+- Confira os nomes dos integrantes no README.
 - Execute testes e container no computador usado na apresentação.
 - Treine explicar e alterar uma validação ou teste.
-- Explique o uso de IA com transparência: a responsabilidade pelo código é da equipe.
 
-Não é necessário acrescentar frontend, autenticação, banco, PUT ou DELETE para esta entrega. A data da apresentação será definida pelo professor.
+Não é necessário acrescentar frontend, autenticação, banco, PUT ou DELETE para esta entrega. A apresentação está marcada para 17/11/2026.
