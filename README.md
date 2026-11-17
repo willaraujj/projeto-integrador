@@ -169,7 +169,8 @@ projeto-integrador/
 ├── Dockerfile
 ├── .dockerignore
 ├── docs/
-│   └── APRESENTACAO.md
+│   ├── APRESENTACAO.md
+│   └── GUIA_DE_ESTUDO.md
 ├── server.js
 ├── package.json
 ├── package-lock.json
@@ -274,18 +275,18 @@ Não são exigidos nesta etapa: frontend, banco de dados, login, JWT, autentica�
 
 ## Integrantes da equipe
 
-**A preencher pela equipe — máximo de 6 integrantes, conforme a atividade.**
-
-| Nome | GitHub |
-| --- | --- |
-| A informar | A informar |
+- Willyan Barbosa Araujo
+- Julio Cesar Coelho Barbosa
+- João Vinicius dos Santos Amaro
+- Gabriel de Sousa Dias
+- Angelo Antonio Ribeiro
 
 Todos os integrantes devem conhecer a implementação e estar preparados para explicar o código, os testes, a regra de negócio, o uso de Git, Docker e SOLID.
 
 ## Checklist para entrega e apresentação
 
 - [x] Documentar o problema conforme o briefing Gestão de Consultores.
-- [ ] Informar os integrantes da equipe.
+- [x] Informar os integrantes da equipe.
 - [ ] Executar `npm test` no ambiente da apresentação.
 - [x] Implementar Dockerfile e .dockerignore.
 - [ ] Construir a imagem e executar o container no computador da apresentação.
@@ -294,12 +295,10 @@ Todos os integrantes devem conhecer a implementação e estar preparados para ex
 - [ ] Mostrar a aplicação do SRP no código.
 - [ ] Apresentar o histórico de commits e garantir acesso do professor ao repositório.
 
-Consulte o [roteiro de apresentação](docs/APRESENTACAO.md) para demonstração e explicação das decisões.
+Consulte o [roteiro de apresentação](docs/APRESENTACAO.md) para a demonstração e o [guia de estudo](docs/GUIA_DE_ESTUDO.md) para aprender os conceitos, os arquivos e os símbolos do código.
 
-**Data da apresentação:** a ser definida, conforme o enunciado.
+**Data da apresentação:** 17/11/2026.
 
-## Referência e uso de IA
+## Referência
 
-Este README foi elaborado com base na atividade **Projeto Integrador — Sistemas de Informação / Ciência da Computação — FACAPE** e na implementação disponível neste repositório.
-
-A atividade permite o uso de inteligência artificial, mas a equipe continua responsável por compreender, executar, testar, modificar e explicar toda a solução entregue.
+Atividade **Projeto Integrador — Sistemas de Informação / Ciência da Computação — FACAPE**, tema **Projeto 5 — Gestão de Consultores**.
