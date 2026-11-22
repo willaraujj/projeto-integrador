@@ -11,12 +11,15 @@ class ErroHttp extends Error {
 function validarDados(body) {
   const erros = [];
   const nome = typeof body.nome === 'string' ? body.nome.trim() : '';
-  const especialidades = Array.isArray(body.especialidades)
-    ? body.especialidades
+  const entradaEspecialidades = body.especialidades ?? body.especialidade;
+  const especialidades = typeof entradaEspecialidades === 'string'
+    ? [entradaEspecialidades.trim()].filter(Boolean)
+    : Array.isArray(entradaEspecialidades)
+      ? entradaEspecialidades
         .filter((item) => typeof item === 'string')
         .map((item) => item.trim())
         .filter(Boolean)
-    : [];
+      : [];
 
   if (!nome) erros.push('O campo "nome" é obrigatório e não pode ser vazio.');
   if (nome.length > 160) erros.push('O campo "nome" deve ter no máximo 160 caracteres.');
