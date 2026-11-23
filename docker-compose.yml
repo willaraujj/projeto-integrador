@@ -1,0 +1,33 @@
+services:
+  api:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      FRONTEND_ORIGIN: http://localhost:5173
+      DATABASE_URL: postgres://consultores:consultores@db:5432/gestao_consultores
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: gestao_consultores
+      POSTGRES_USER: consultores
+      POSTGRES_PASSWORD: consultores
+    volumes:
+      - dados_postgres:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/001-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U consultores -d gestao_consultores"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  dados_postgres:
+
